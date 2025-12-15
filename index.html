@@ -268,7 +268,9 @@
       const encodedUrl = new URLSearchParams(window.location.search).get('c');
       if (!encodedUrl) return null;
       try {
-        return decodeURIComponent(atob(encodedUrl));
+        // 补回HTTPS前缀，兼容缩短编码的生成逻辑
+        const decoded = decodeURIComponent(atob(encodedUrl));
+        return 'https://' + decoded;
       } catch (e) {
         return null;
       }
