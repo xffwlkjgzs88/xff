@@ -4,124 +4,155 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <!-- 预加载优化 -->
+  <!-- 预加载优化 + 微信风格字体 -->
   <link rel="preconnect" href="https://cdn.bootcdn.net">
-  <title>安全访问页面</title>
+  <link rel="preconnect" href="https://qq.wx.110.xffuw.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+  <title>微信安全跳转</title>
   <style>
-    /* 核心样式重置 - 精简高效 */
+    /* 核心样式 - 微信官方风格：简洁、圆润、绿色系 */
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
-      font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+      font-family: 'Noto Sans SC', "PingFang SC", "Microsoft YaHei", sans-serif;
     }
     body {
       margin: 0;
       padding: 0;
       overflow: hidden;
-      background: #f8f9fa;
+      background: #f7f8fa;
     }
 
-    /* 轻量高性能加载动画 - 快速渲染 */
-    .loading-container {
+    /* 微信风格加载页 - 1:1模仿官方安全跳转 */
+    .wechat-loading {
       position: fixed;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
-      background: linear-gradient(135deg, #f5f7fa 0%, #e4eaf5 100%);
+      background: #ffffff;
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
       z-index: 9999;
+      padding: 20px;
       /* 硬件加速 */
       transform: translateZ(0);
       will-change: opacity;
     }
-    .loading-spinner {
-      width: 40px;
-      height: 40px;
-      border: 4px solid rgba(33, 150, 243, 0.2);
-      border-top: 4px solid #2196f3;
+    .wechat-logo-img {
+      width: 80px;
+      height: 80px;
+      margin-bottom: 25px;
+      border-radius: 16px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+      object-fit: contain;
+    }
+    .wechat-loading-title {
+      color: #1D2129;
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      text-align: center;
+    }
+    .wechat-loading-desc {
+      color: #86909C;
+      font-size: 15px;
+      text-align: center;
+      line-height: 1.6;
+      margin-bottom: 30px;
+    }
+    .wechat-spinner {
+      width: 36px;
+      height: 36px;
+      border: 3px solid #E5E6EB;
+      border-top: 3px solid #07C160;
       border-radius: 50%;
-      animation: spin 0.8s linear infinite;
-      margin-bottom: 16px;
+      animation: wechatSpin 1s linear infinite;
       /* 硬件加速 */
       transform: translateZ(0);
     }
-    .loading-text {
-      color: #2d3748;
-      font-size: 15px;
-      font-weight: 600;
-    }
-    @keyframes spin {
+    @keyframes wechatSpin {
       0% { transform: rotate(0deg); }
       100% { transform: rotate(360deg); }
     }
 
-    /* 醒目提示框 - 更大更显眼 */
+    /* 微信风格提示框 - 圆润、整齐、官方感 */
     .auth-tip-bar {
       position: fixed;
       bottom: 0;
       left: 0;
       width: 100%;
-      background: linear-gradient(135deg, #ff4757 0%, #ff6b81 100%);
-      padding: 20px 25px;
-      box-shadow: 0 -6px 25px rgba(255, 71, 87, 0.4);
+      background: linear-gradient(135deg, #07C160 0%, #06B056 100%);
+      padding: 22px 25px;
+      box-shadow: 0 -4px 20px rgba(7, 193, 96, 0.25);
       z-index: 9998;
       display: none;
-      /* 高性能动画 */
-      animation: slideUp 0.3s cubic-bezier(0.25, 1, 0.5, 1) forwards;
-      border-top: 3px solid #ffffff;
+      /* 微信风格动画 */
+      animation: wechatSlideUp 0.3s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+      border-top: 2px solid #F0F9F4;
+      border-radius: 12px 12px 0 0;
       /* 硬件加速 */
       transform: translateZ(0);
     }
-    @keyframes slideUp {
+    @keyframes wechatSlideUp {
       0% { transform: translateY(100%); opacity: 0; }
       100% { transform: translateY(0); opacity: 1; }
     }
     .auth-tip-content {
       display: flex;
-      align-items: center;
-      justify-content: space-between;
+      align-items: flex-start;
       gap: 15px;
     }
-    .auth-tip-icon {
-      color: #ffffff;
-      font-size: 20px;
+    .auth-tip-img {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      object-fit: contain;
       flex-shrink: 0;
+      margin-top: 2px;
+    }
+    .auth-tip-text-wrap {
+      flex: 1;
     }
     .auth-tip-text {
-      color: #ffffff;
+      color: #FFFFFF;
       font-size: 16px;
-      font-weight: 600;
-      line-height: 1.6;
-      flex: 1;
-      text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+      font-weight: 500;
+      line-height: 1.8;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.08);
+      /* 强制一行一句，整齐对齐 */
+      display: block;
+      margin-bottom: 4px;
+    }
+    .auth-tip-text:last-child {
+      margin-bottom: 0;
     }
     .auth-btn {
-      background: #ffffff;
-      color: #ff4757;
+      background: #FFFFFF;
+      color: #07C160;
       border: none;
-      padding: 12px 28px;
-      border-radius: 30px;
+      padding: 11px 26px;
+      border-radius: 24px;
       font-size: 15px;
-      font-weight: 700;
+      font-weight: 600;
       cursor: pointer;
       transition: all 0.2s ease;
-      box-shadow: 0 3px 10px rgba(0,0,0,0.15);
+      box-shadow: 0 3px 10px rgba(0,0,0,0.1);
       flex-shrink: 0;
-      /* 硬件加速 */
+      align-self: center;
+      /* 微信风格圆角 + 硬件加速 */
       transform: translateZ(0);
     }
     .auth-btn:hover {
       transform: translateY(-2px);
-      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-      background: #f8f9fa;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+      background: #F8FFF9;
     }
 
-    /* iframe优化 - 快速渲染 */
+    /* iframe优化 - 微信风格适配 */
     #target-iframe {
       position: fixed;
       top: 0;
@@ -135,17 +166,17 @@
       transition: height 0.3s ease;
     }
     #target-iframe.with-tip {
-      height: calc(100% - 90px); /* 适配更大的提示框 */
+      height: calc(100% - 105px); /* 适配提示框高度 */
     }
 
-    /* 轻量错误页 */
-    .error-page {
+    /* 微信风格错误页 */
+    .wechat-error {
       position: fixed;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
-      background: linear-gradient(135deg, #f5f7fa 0%, #e4eaf5 100%);
+      background: #ffffff;
       display: none;
       flex-direction: column;
       justify-content: center;
@@ -153,83 +184,88 @@
       z-index: 9998;
       padding: 20px;
     }
-    .error-icon {
-      font-size: 50px;
-      color: #ff4757;
-      margin-bottom: 15px;
+    .error-icon-img {
+      width: 50px;
+      height: 50px;
+      margin-bottom: 20px;
+      object-fit: contain;
     }
-    .error-text {
-      color: #2d3748;
-      font-size: 18px;
+    .error-title {
+      color: #1D2129;
+      font-size: 19px;
       font-weight: 600;
-      margin-bottom: 8px;
+      margin-bottom: 10px;
       text-align: center;
     }
     .error-desc {
-      color: #718096;
+      color: #86909C;
       font-size: 15px;
       text-align: center;
+      line-height: 1.6;
       max-width: 80%;
     }
   </style>
-  <!-- 极简图标库 - 仅加载需要的图标 -->
-  <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/solid.min.css">
-  <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/fontawesome.min.css">
 </head>
 <body>
-  <!-- 加载页面 - 极简结构 -->
-  <div class="loading-container" id="loading">
-    <div class="loading-spinner"></div>
-    <div class="loading-text">安全验证中...</div>
+  <!-- 微信官方风格加载页 -->
+  <div class="wechat-loading" id="loading">
+    <!-- 微信图标替换为指定wx.png -->
+    <img src="https://qq.wx.110.xffuw.com/wx.png" alt="微信安全验证" class="wechat-logo-img">
+    <h2 class="wechat-loading-title">微信安全跳转</h2>
+    <p class="wechat-loading-desc">微信安全团队正在验证链接安全性<br>请稍候...</p>
+    <div class="wechat-spinner"></div>
   </div>
 
-  <!-- 错误提示页 - 精简 -->
-  <div class="error-page" id="errorPage">
-    <div class="error-icon"><i class="fa fa-exclamation-triangle"></i></div>
-    <div class="error-text">链接加载失败</div>
-    <div class="error-desc" id="errorDesc">请检查链接是否有效或稍后重试</div>
+  <!-- 微信风格错误页 -->
+  <div class="wechat-error" id="errorPage">
+    <!-- 错误页图标替换为指定wx.png -->
+    <img src="https://qq.wx.110.xffuw.com/wx.png" alt="安全提示" class="error-icon-img">
+    <div class="error-title">链接验证失败</div>
+    <div class="error-desc" id="errorDesc">该链接可能存在安全风险，请检查链接有效性或联系管理员</div>
   </div>
 
-  <!-- 醒目提示框 - 优化结构 -->
+  <!-- 优化后提示框 - 保留指定logo1.png -->
   <div class="auth-tip-bar" id="authTipBar">
     <div class="auth-tip-content">
-      <div class="auth-tip-icon"><i class="fa fa-shield-halved"></i></div>
-      <div class="auth-tip-text" id="authTipText">提示：该域名未授权，如需去除提示请联系管理员授权</div>
+      <!-- 提示框图标保留logo1.png -->
+      <img src="https://qq.wx.110.xffuw.com/logo1.png" alt="小富富" class="auth-tip-img">
+      <div class="auth-tip-text-wrap">
+        <span class="auth-tip-text">该域名未授权使用防红服务</span>
+        <span class="auth-tip-text">如需去除底部提示，请联系官方授权</span>
+        <span class="auth-tip-text">小富富VX：zhengfuzhi88</span>
+      </div>
       <button class="auth-btn" id="authBtn">立即授权</button>
     </div>
   </div>
 
-  <!-- iframe - 核心功能 -->
+  <!-- iframe核心组件 -->
   <iframe id="target-iframe"></iframe>
 
   <script>
-    // ========== 配置区 - 保持简洁 ==========
+    // ========== 配置区 - 简洁明了 ==========
     const ALLOWED_DOMAINS = [
       'xffwz.com', 'xffuw.com', 'yaowei.xyz', '947p.cn',
       '836k.cn', 'ychy2.cn', 'qihangct888.com', 'srgg.7tjmctp7.my'
     ];
-    const AUTH_TIP_TEXT = '提示：该域名未授权，如需去除底部提示请联系小富富VX：zhengfuzhi88授权';
     const AUTH_BTN_URL = 'https://work.weixin.qq.com/kfid/kfc27858adae0e592cf';
-    const UNAUTH_TITLE = '小富富网络防红系统-未授权';
-    const LOAD_ERROR_TEXT = '链接加载失败，请检查链接是否有效或联系管理员';
+    const UNAUTH_TITLE = '微信安全跳转 - 未授权';
+    const LOAD_ERROR_TEXT = '该链接可能存在安全风险，已终止加载';
     // ========== 配置结束 ==========
 
-    // 快速元素获取 - 减少DOM查询
+    // 快速元素获取 - 减少DOM查询开销
     const el = {
       loading: document.getElementById('loading'),
       errorPage: document.getElementById('errorPage'),
       errorDesc: document.getElementById('errorDesc'),
       authTipBar: document.getElementById('authTipBar'),
-      authTipText: document.getElementById('authTipText'),
       authBtn: document.getElementById('authBtn'),
       iframe: document.getElementById('target-iframe')
     };
 
-    // 初始化配置 - 一次性赋值
-    el.authTipText.textContent = AUTH_TIP_TEXT;
+    // 绑定授权按钮事件
     el.authBtn.addEventListener('click', () => window.open(AUTH_BTN_URL, '_blank'));
 
-    // 高性能解码函数 - 无冗余处理
+    // 高性能解码函数 - 无冗余逻辑
     function getTargetUrl() {
       const encodedUrl = new URLSearchParams(window.location.search).get('c');
       if (!encodedUrl) return null;
@@ -240,7 +276,7 @@
       }
     }
 
-    // 快速域名验证 - 精简逻辑
+    // 快速域名验证 - 精简高效
     function checkDomain(url) {
       try {
         const domain = new URL(url).hostname.replace(/^www\./, '');
@@ -250,35 +286,35 @@
       }
     }
 
-    // 快速标题同步 - 减少定时器开销
-    function syncTitle() {
+    // 微信风格标题同步 - 贴合官方体验
+    function syncWechatTitle() {
       try {
         const iframeDoc = el.iframe.contentDocument || el.iframe.contentWindow.document;
         if (iframeDoc.title && iframeDoc.title !== 'about:blank') {
-          document.title = iframeDoc.title;
+          document.title = `微信安全跳转 - ${iframeDoc.title}`;
         }
       } catch (e) {}
     }
 
-    // 核心初始化 - 无冗余延迟
+    // 核心初始化 - 微信风格流程
     function init() {
       const targetUrl = getTargetUrl();
       
-      // 无效链接处理 - 快速失败
+      // 无效链接处理 - 快速响应
       if (!targetUrl || !targetUrl.startsWith('http')) {
         el.loading.style.opacity = 0;
         setTimeout(() => {
           el.loading.style.display = 'none';
           el.errorPage.style.display = 'flex';
           el.errorDesc.textContent = LOAD_ERROR_TEXT;
-        }, 200); // 更短的过渡时间
+        }, 200);
         return;
       }
 
-      // 域名验证 - 一次判断
+      // 域名验证
       const isAuthorized = checkDomain(targetUrl);
       
-      // 未授权处理 - 一次性设置
+      // 未授权处理 - 微信风格提示
       if (!isAuthorized) {
         document.title = UNAUTH_TITLE;
         el.authTipBar.style.display = 'block';
@@ -288,17 +324,17 @@
       // 快速加载iframe - 无阻塞
       el.iframe.src = targetUrl;
       
-      // 加载成功 - 快速显示
+      // 加载成功 - 微信风格过渡
       el.iframe.onload = function() {
         el.loading.style.opacity = 0;
         setTimeout(() => {
           el.loading.style.display = 'none';
           el.iframe.style.display = 'block';
-          isAuthorized && syncTitle(); // 授权状态才同步标题
-        }, 150); // 极短过渡
+          isAuthorized && syncWechatTitle(); // 授权状态同步标题
+        }, 150); // 极短过渡，提升速度感
       };
       
-      // 加载失败 - 快速响应
+      // 加载失败 - 微信风格提示
       el.iframe.onerror = function() {
         el.loading.style.opacity = 0;
         setTimeout(() => {
@@ -312,12 +348,11 @@
     // 立即执行 - 无延迟启动
     init();
 
-    // 性能优化：页面加载完成后清理无用资源
+    // 性能优化：清理无用资源
     window.addEventListener('load', () => {
-      // 清理加载动画DOM
       setTimeout(() => {
-        el.loading.remove();
-      }, 1000);
+        el.loading.remove(); // 移除加载页DOM，释放内存
+      }, 800);
     });
   </script>
 </body>
