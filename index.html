@@ -103,17 +103,16 @@
     }
     .auth-tip-content {
       display: flex;
-      align-items: center; /* 改为垂直居中 */
+      align-items: center; /* 垂直居中 */
       gap: 15px;
     }
     .auth-tip-img {
       width: 42px; /* 放大图标尺寸 */
       height: 42px;
-      border-radius: 10px; /* 稍微增大圆角更美观 */
+      border-radius: 10px; /* 增大圆角更美观 */
       object-fit: contain;
       flex-shrink: 0;
-      /* 完全居中，移除顶部边距 */
-      margin: 0;
+      margin: 0; /* 完全居中 */
     }
     .auth-tip-text-wrap {
       flex: 1;
@@ -209,8 +208,8 @@
 <body>
   <!-- 微信官方风格加载页 -->
   <div class="wechat-loading" id="loading">
-    <!-- 微信图标替换为指定wx.png -->
-    <img src="https://qq.wx.110.xffuw.com/wx.png" alt="微信安全验证" class="wechat-logo-img">
+    <!-- 替换为新的wx.png路径 -->
+    <img src="https://qq.wx.110.xffuw.com/666/wx.png" alt="微信安全验证" class="wechat-logo-img">
     <h2 class="wechat-loading-title">微信安全跳转</h2>
     <p class="wechat-loading-desc">微信安全团队正在验证链接安全性<br>请稍候...</p>
     <div class="wechat-spinner"></div>
@@ -218,8 +217,8 @@
 
   <!-- 微信风格错误页 -->
   <div class="wechat-error" id="errorPage">
-    <!-- 错误页图标替换为指定wx.png -->
-    <img src="https://qq.wx.110.xffuw.com/wx.png" alt="安全提示" class="error-icon-img">
+    <!-- 替换为新的wx.png路径 -->
+    <img src="https://qq.wx.110.xffuw.com/666/wx.png" alt="安全提示" class="error-icon-img">
     <div class="error-title">链接验证失败</div>
     <div class="error-desc" id="errorDesc">该链接可能存在安全风险，请检查链接有效性或联系管理员</div>
   </div>
@@ -227,8 +226,8 @@
   <!-- 优化后提示框 - 图标居中+放大 -->
   <div class="auth-tip-bar" id="authTipBar">
     <div class="auth-tip-content">
-      <!-- 提示框图标保留logo1.png，尺寸放大+居中 -->
-      <img src="https://qq.wx.110.xffuw.com/logo1.png" alt="小富富" class="auth-tip-img">
+      <!-- 替换为新的logo1.png路径 -->
+      <img src="https://qq.wx.110.xffuw.com/666/logo1.png" alt="小富富" class="auth-tip-img">
       <div class="auth-tip-text-wrap">
         <span class="auth-tip-text">该域名未授权使用防红服务</span>
         <span class="auth-tip-text">如需去除底部提示，请联系官方授权</span>
@@ -248,7 +247,10 @@
       '836k.cn', 'ychy2.cn', 'qihangct888.com', 'srgg.7tjmctp7.my'
     ];
     const AUTH_BTN_URL = 'https://work.weixin.qq.com/kfid/kfc27858adae0e592cf';
-    const UNAUTH_TITLE = '微信安全跳转 - 未授权';
+    const UNAUTH_TITLE = '小富富网络提示您未授权'; // 未授权标题
+    const LOADING_TITLE = '微信安全跳转'; // 跳转时标题
+    const CROSS_DOMAIN_TITLE = '小富富网络防红系统'; // 跨域无法获取标题时使用
+    const ERROR_TITLE = '小富富网络提示您域名有误'; // 无效/错误链接标题
     const LOAD_ERROR_TEXT = '该链接可能存在安全风险，已终止加载';
     // ========== 配置结束 ==========
 
@@ -286,18 +288,45 @@
       }
     }
 
-    // 微信风格标题同步 - 贴合官方体验
-    function syncWechatTitle() {
-      try {
-        const iframeDoc = el.iframe.contentDocument || el.iframe.contentWindow.document;
-        if (iframeDoc.title && iframeDoc.title !== 'about:blank') {
-          document.title = `微信安全跳转 - ${iframeDoc.title}`;
+    // 标题同步逻辑优化
+    function syncTitle(isAuthorized, targetUrl) {
+      // 跳转过程中保持微信安全跳转标题
+      document.title = LOADING_TITLE;
+      
+      if (isAuthorized) {
+        // 授权域名：优先同步原网站标题
+        try {
+          const iframeDoc = el.iframe.contentDocument || el.iframe.contentWindow.document;
+          // 定时检测iframe标题，确保加载完成后同步
+          const titleWatcher = setInterval(() => {
+            try {
+              if (iframeDoc.title && iframeDoc.title !== 'about:blank') {
+                document.title = iframeDoc.title;
+                clearInterval(titleWatcher);
+              }
+            } catch (e) {
+              // 跨域无法获取标题时，使用指定标题
+              document.title = CROSS_DOMAIN_TITLE;
+              clearInterval(titleWatcher);
+            }
+          }, 300);
+        } catch (e) {
+          // 异常时使用指定的跨域标题
+          document.title = CROSS_DOMAIN_TITLE;
         }
-      } catch (e) {}
+      } else {
+        // 未授权域名：设置指定标题
+        setTimeout(() => {
+          document.title = UNAUTH_TITLE;
+        }, 500); // 延迟确保跳转动画完成后再修改
+      }
     }
 
     // 核心初始化 - 微信风格流程
     function init() {
+      // 初始标题设为跳转中标题
+      document.title = LOADING_TITLE;
+      
       const targetUrl = getTargetUrl();
       
       // 无效链接处理 - 快速响应
@@ -307,6 +336,7 @@
           el.loading.style.display = 'none';
           el.errorPage.style.display = 'flex';
           el.errorDesc.textContent = LOAD_ERROR_TEXT;
+          document.title = ERROR_TITLE; // 无效链接显示域名有误标题
         }, 200);
         return;
       }
@@ -316,7 +346,6 @@
       
       // 未授权处理 - 微信风格提示
       if (!isAuthorized) {
-        document.title = UNAUTH_TITLE;
         el.authTipBar.style.display = 'block';
         el.iframe.classList.add('with-tip');
       }
@@ -330,7 +359,8 @@
         setTimeout(() => {
           el.loading.style.display = 'none';
           el.iframe.style.display = 'block';
-          isAuthorized && syncWechatTitle(); // 授权状态同步标题
+          // 同步标题（授权显示原网站名/跨域标题，未授权显示指定标题）
+          syncTitle(isAuthorized, targetUrl);
         }, 150); // 极短过渡，提升速度感
       };
       
@@ -341,6 +371,7 @@
           el.loading.style.display = 'none';
           el.errorPage.style.display = 'flex';
           el.errorDesc.textContent = LOAD_ERROR_TEXT;
+          document.title = ERROR_TITLE; // 加载失败显示域名有误标题
         }, 200);
       };
     }
