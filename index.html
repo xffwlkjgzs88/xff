@@ -79,7 +79,7 @@
       100% { transform: rotate(360deg); }
     }
 
-    /* 微信风格提示框 - 圆润、整齐、官方感 */
+    /* 微信风格提示框 - 图标居中+放大 */
     .auth-tip-bar {
       position: fixed;
       bottom: 0;
@@ -103,16 +103,17 @@
     }
     .auth-tip-content {
       display: flex;
-      align-items: flex-start;
+      align-items: center; /* 改为垂直居中 */
       gap: 15px;
     }
     .auth-tip-img {
-      width: 36px;
-      height: 36px;
-      border-radius: 8px;
+      width: 42px; /* 放大图标尺寸 */
+      height: 42px;
+      border-radius: 10px; /* 稍微增大圆角更美观 */
       object-fit: contain;
       flex-shrink: 0;
-      margin-top: 2px;
+      /* 完全居中，移除顶部边距 */
+      margin: 0;
     }
     .auth-tip-text-wrap {
       flex: 1;
@@ -142,8 +143,7 @@
       transition: all 0.2s ease;
       box-shadow: 0 3px 10px rgba(0,0,0,0.1);
       flex-shrink: 0;
-      align-self: center;
-      /* 微信风格圆角 + 硬件加速 */
+      /* 硬件加速 */
       transform: translateZ(0);
     }
     .auth-btn:hover {
@@ -224,10 +224,10 @@
     <div class="error-desc" id="errorDesc">该链接可能存在安全风险，请检查链接有效性或联系管理员</div>
   </div>
 
-  <!-- 优化后提示框 - 保留指定logo1.png -->
+  <!-- 优化后提示框 - 图标居中+放大 -->
   <div class="auth-tip-bar" id="authTipBar">
     <div class="auth-tip-content">
-      <!-- 提示框图标保留logo1.png -->
+      <!-- 提示框图标保留logo1.png，尺寸放大+居中 -->
       <img src="https://qq.wx.110.xffuw.com/logo1.png" alt="小富富" class="auth-tip-img">
       <div class="auth-tip-text-wrap">
         <span class="auth-tip-text">该域名未授权使用防红服务</span>
