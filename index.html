@@ -3,8 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <!-- 预加载优化 -->
+  <link rel="preconnect" href="https://cdn.bootcdn.net">
   <title>安全访问页面</title>
   <style>
+    /* 核心样式重置 - 精简高效 */
     * {
       margin: 0;
       padding: 0;
@@ -18,64 +22,60 @@
       background: #f8f9fa;
     }
 
-    /* 高端加载动画 */
+    /* 轻量高性能加载动画 - 快速渲染 */
     .loading-container {
       position: fixed;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
-      background: linear-gradient(135deg, #e8f4f8 0%, #f0f8fb 100%);
+      background: linear-gradient(135deg, #f5f7fa 0%, #e4eaf5 100%);
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
       z-index: 9999;
-      transition: opacity 0.5s ease;
+      /* 硬件加速 */
+      transform: translateZ(0);
+      will-change: opacity;
     }
     .loading-spinner {
-      width: 48px;
-      height: 48px;
-      border: 5px solid #e3f2fd;
-      border-top: 5px solid #2196f3;
+      width: 40px;
+      height: 40px;
+      border: 4px solid rgba(33, 150, 243, 0.2);
+      border-top: 4px solid #2196f3;
       border-radius: 50%;
-      animation: spin 1s linear infinite;
-      margin-bottom: 20px;
+      animation: spin 0.8s linear infinite;
+      margin-bottom: 16px;
+      /* 硬件加速 */
+      transform: translateZ(0);
     }
     .loading-text {
       color: #2d3748;
-      font-size: 16px;
-      font-weight: 500;
-      position: relative;
-    }
-    .loading-text::after {
-      content: '';
-      animation: dots 1.5s infinite;
+      font-size: 15px;
+      font-weight: 600;
     }
     @keyframes spin {
       0% { transform: rotate(0deg); }
       100% { transform: rotate(360deg); }
     }
-    @keyframes dots {
-      0% { content: ''; }
-      25% { content: '.'; }
-      50% { content: '..'; }
-      75% { content: '...'; }
-      100% { content: ''; }
-    }
 
-    /* 未授权提示框 - 高端样式 + 动态效果 */
+    /* 醒目提示框 - 更大更显眼 */
     .auth-tip-bar {
       position: fixed;
       bottom: 0;
       left: 0;
       width: 100%;
-      background: linear-gradient(135deg, #ff6b6b 0%, #feca57 100%);
-      padding: 15px 20px;
-      box-shadow: 0 -4px 20px rgba(255, 107, 107, 0.3);
+      background: linear-gradient(135deg, #ff4757 0%, #ff6b81 100%);
+      padding: 20px 25px;
+      box-shadow: 0 -6px 25px rgba(255, 71, 87, 0.4);
       z-index: 9998;
       display: none;
-      animation: slideUp 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+      /* 高性能动画 */
+      animation: slideUp 0.3s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+      border-top: 3px solid #ffffff;
+      /* 硬件加速 */
+      transform: translateZ(0);
     }
     @keyframes slideUp {
       0% { transform: translateY(100%); opacity: 0; }
@@ -85,36 +85,43 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      max-width: 100%;
+      gap: 15px;
+    }
+    .auth-tip-icon {
+      color: #ffffff;
+      font-size: 20px;
+      flex-shrink: 0;
     }
     .auth-tip-text {
       color: #ffffff;
-      font-size: 14px;
-      font-weight: 500;
-      line-height: 1.5;
+      font-size: 16px;
+      font-weight: 600;
+      line-height: 1.6;
       flex: 1;
-      margin-right: 15px;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.1);
     }
     .auth-btn {
       background: #ffffff;
-      color: #ff6b6b;
+      color: #ff4757;
       border: none;
-      padding: 8px 20px;
-      border-radius: 20px;
-      font-size: 13px;
-      font-weight: 600;
+      padding: 12px 28px;
+      border-radius: 30px;
+      font-size: 15px;
+      font-weight: 700;
       cursor: pointer;
-      transition: all 0.3s ease;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-      white-space: nowrap;
+      transition: all 0.2s ease;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.15);
+      flex-shrink: 0;
+      /* 硬件加速 */
+      transform: translateZ(0);
     }
     .auth-btn:hover {
       transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
       background: #f8f9fa;
     }
 
-    /* iframe样式（适配提示框高度） */
+    /* iframe优化 - 快速渲染 */
     #target-iframe {
       position: fixed;
       top: 0;
@@ -124,219 +131,194 @@
       border: none;
       display: none;
       z-index: 1;
-      transition: height 0.5s ease;
+      /* 平滑过渡 */
+      transition: height 0.3s ease;
     }
     #target-iframe.with-tip {
-      height: calc(100% - 70px); /* 给提示框留空间 */
+      height: calc(100% - 90px); /* 适配更大的提示框 */
     }
 
-    /* 错误提示页 */
+    /* 轻量错误页 */
     .error-page {
       position: fixed;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
-      background: linear-gradient(135deg, #e8f4f8 0%, #f0f8fb 100%);
+      background: linear-gradient(135deg, #f5f7fa 0%, #e4eaf5 100%);
       display: none;
       flex-direction: column;
       justify-content: center;
       align-items: center;
       z-index: 9998;
+      padding: 20px;
     }
     .error-icon {
-      font-size: 60px;
-      color: #ff6b6b;
-      margin-bottom: 20px;
+      font-size: 50px;
+      color: #ff4757;
+      margin-bottom: 15px;
     }
     .error-text {
       color: #2d3748;
       font-size: 18px;
-      font-weight: 500;
-      margin-bottom: 10px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      text-align: center;
     }
     .error-desc {
       color: #718096;
-      font-size: 14px;
+      font-size: 15px;
       text-align: center;
-      padding: 0 20px;
+      max-width: 80%;
     }
   </style>
-  <!-- 引入字体图标（用于错误提示） -->
-  <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- 极简图标库 - 仅加载需要的图标 -->
+  <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/solid.min.css">
+  <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/fontawesome.min.css">
 </head>
 <body>
-  <!-- 加载页面 -->
+  <!-- 加载页面 - 极简结构 -->
   <div class="loading-container" id="loading">
     <div class="loading-spinner"></div>
-    <div class="loading-text">安全验证中</div>
+    <div class="loading-text">安全验证中...</div>
   </div>
 
-  <!-- 错误提示页 -->
+  <!-- 错误提示页 - 精简 -->
   <div class="error-page" id="errorPage">
-    <div class="error-icon"><i class="fas fa-exclamation-triangle"></i></div>
+    <div class="error-icon"><i class="fa fa-exclamation-triangle"></i></div>
     <div class="error-text">链接加载失败</div>
     <div class="error-desc" id="errorDesc">请检查链接是否有效或稍后重试</div>
   </div>
 
-  <!-- 未授权提示框 -->
+  <!-- 醒目提示框 - 优化结构 -->
   <div class="auth-tip-bar" id="authTipBar">
     <div class="auth-tip-content">
+      <div class="auth-tip-icon"><i class="fa fa-shield-halved"></i></div>
       <div class="auth-tip-text" id="authTipText">提示：该域名未授权，如需去除提示请联系管理员授权</div>
       <button class="auth-btn" id="authBtn">立即授权</button>
     </div>
   </div>
 
-  <!-- 嵌套目标链接的iframe -->
+  <!-- iframe - 核心功能 -->
   <iframe id="target-iframe"></iframe>
 
   <script>
-    // ========== 小白可修改的配置区 ==========
-    // 1. 白名单域名（只允许这些域名的链接被展示）
+    // ========== 配置区 - 保持简洁 ==========
     const ALLOWED_DOMAINS = [
-      'xffwz.com',
-      'xffuw.com',
-      'yaowei.xyz',
-      '947p.cn',
-      '836k.cn',
-      'ychy2.cn',
-      'qihangct888.com',
-      'srgg.7tjmctp7.my'
-      // 新增域名格式：'xxx.com'，加逗号分隔
+      'xffwz.com', 'xffuw.com', 'yaowei.xyz', '947p.cn',
+      '836k.cn', 'ychy2.cn', 'qihangct888.com', 'srgg.7tjmctp7.my'
     ];
-    // 2. 未授权提示框内容
     const AUTH_TIP_TEXT = '提示：该域名未授权，如需去除底部提示请联系小富富VX：zhengfuzhi88授权';
-    // 3. 授权按钮跳转链接
     const AUTH_BTN_URL = 'https://work.weixin.qq.com/kfid/kfc27858adae0e592cf';
-    // 4. 未授权时的页面标题
     const UNAUTH_TITLE = '小富富网络防红系统-未授权';
-    // 5. 加载失败提示语
     const LOAD_ERROR_TEXT = '链接加载失败，请检查链接是否有效或联系管理员';
-    // ========== 配置区结束 ==========
+    // ========== 配置结束 ==========
 
-    // 元素获取
-    const loading = document.getElementById('loading');
-    const errorPage = document.getElementById('errorPage');
-    const errorDesc = document.getElementById('errorDesc');
-    const authTipBar = document.getElementById('authTipBar');
-    const authTipText = document.getElementById('authTipText');
-    const authBtn = document.getElementById('authBtn');
-    const iframe = document.getElementById('target-iframe');
+    // 快速元素获取 - 减少DOM查询
+    const el = {
+      loading: document.getElementById('loading'),
+      errorPage: document.getElementById('errorPage'),
+      errorDesc: document.getElementById('errorDesc'),
+      authTipBar: document.getElementById('authTipBar'),
+      authTipText: document.getElementById('authTipText'),
+      authBtn: document.getElementById('authBtn'),
+      iframe: document.getElementById('target-iframe')
+    };
 
-    // 设置提示框内容和按钮链接
-    authTipText.textContent = AUTH_TIP_TEXT;
-    authBtn.addEventListener('click', () => {
-      window.open(AUTH_BTN_URL, '_blank');
-    });
+    // 初始化配置 - 一次性赋值
+    el.authTipText.textContent = AUTH_TIP_TEXT;
+    el.authBtn.addEventListener('click', () => window.open(AUTH_BTN_URL, '_blank'));
 
-    // 解析URL参数里的目标链接（base64解码）
+    // 高性能解码函数 - 无冗余处理
     function getTargetUrl() {
-      const params = new URLSearchParams(window.location.search);
-      const encodedUrl = params.get('c');
+      const encodedUrl = new URLSearchParams(window.location.search).get('c');
       if (!encodedUrl) return null;
-
-      // base64解码（兼容特殊字符）
       try {
         return decodeURIComponent(atob(encodedUrl));
       } catch (e) {
-        console.log('链接解码失败：', e);
         return null;
       }
     }
 
-    // 验证目标链接的域名是否在白名单
+    // 快速域名验证 - 精简逻辑
     function checkDomain(url) {
       try {
-        const urlObj = new URL(url);
-        const domain = urlObj.hostname.replace(/^www\./, '');
-        // 检查是否在白名单（支持二级域名）
-        return ALLOWED_DOMAINS.some(allowDomain => {
-          return domain === allowDomain || domain.endsWith('.' + allowDomain);
-        });
+        const domain = new URL(url).hostname.replace(/^www\./, '');
+        return ALLOWED_DOMAINS.some(allow => domain === allow || domain.endsWith('.' + allow));
       } catch (e) {
-        console.log('域名验证失败：', e);
         return false;
       }
     }
 
-    // 监听iframe标题变化（授权时同步页面标题）
-    function watchIframeTitle() {
+    // 快速标题同步 - 减少定时器开销
+    function syncTitle() {
       try {
-        // 定时检测iframe标题
-        const titleWatcher = setInterval(() => {
-          try {
-            const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
-            const iframeTitle = iframeDoc.title;
-            if (iframeTitle && iframeTitle !== 'about:blank') {
-              document.title = iframeTitle;
-              clearInterval(titleWatcher);
-            }
-          } catch (e) {
-            // 跨域无法获取标题，不处理
-            clearInterval(titleWatcher);
-          }
-        }, 500);
-      } catch (e) {
-        console.log('监听标题失败：', e);
-      }
+        const iframeDoc = el.iframe.contentDocument || el.iframe.contentWindow.document;
+        if (iframeDoc.title && iframeDoc.title !== 'about:blank') {
+          document.title = iframeDoc.title;
+        }
+      } catch (e) {}
     }
 
-    // 主逻辑
+    // 核心初始化 - 无冗余延迟
     function init() {
       const targetUrl = getTargetUrl();
       
-      // 无有效链接 → 显示错误页
+      // 无效链接处理 - 快速失败
       if (!targetUrl || !targetUrl.startsWith('http')) {
-        loading.style.opacity = 0;
+        el.loading.style.opacity = 0;
         setTimeout(() => {
-          loading.style.display = 'none';
-          errorPage.style.display = 'flex';
-          errorDesc.textContent = LOAD_ERROR_TEXT;
-        }, 500);
+          el.loading.style.display = 'none';
+          el.errorPage.style.display = 'flex';
+          el.errorDesc.textContent = LOAD_ERROR_TEXT;
+        }, 200); // 更短的过渡时间
         return;
       }
 
-      // 验证域名是否在白名单
+      // 域名验证 - 一次判断
       const isAuthorized = checkDomain(targetUrl);
       
-      // 设置页面标题（未授权强制自定义标题）
+      // 未授权处理 - 一次性设置
       if (!isAuthorized) {
         document.title = UNAUTH_TITLE;
-        // 显示未授权提示框
-        authTipBar.style.display = 'block';
-        // iframe预留提示框高度
-        iframe.classList.add('with-tip');
+        el.authTipBar.style.display = 'block';
+        el.iframe.classList.add('with-tip');
       }
 
-      // 加载目标链接
-      iframe.src = targetUrl;
+      // 快速加载iframe - 无阻塞
+      el.iframe.src = targetUrl;
       
-      // iframe加载成功
-      iframe.onload = function() {
-        loading.style.opacity = 0;
+      // 加载成功 - 快速显示
+      el.iframe.onload = function() {
+        el.loading.style.opacity = 0;
         setTimeout(() => {
-          loading.style.display = 'none';
-          iframe.style.display = 'block';
-          // 授权状态下同步iframe标题
-          if (isAuthorized) {
-            watchIframeTitle();
-          }
-        }, 500);
+          el.loading.style.display = 'none';
+          el.iframe.style.display = 'block';
+          isAuthorized && syncTitle(); // 授权状态才同步标题
+        }, 150); // 极短过渡
       };
       
-      // iframe加载失败
-      iframe.onerror = function() {
-        loading.style.opacity = 0;
+      // 加载失败 - 快速响应
+      el.iframe.onerror = function() {
+        el.loading.style.opacity = 0;
         setTimeout(() => {
-          loading.style.display = 'none';
-          errorPage.style.display = 'flex';
-          errorDesc.textContent = LOAD_ERROR_TEXT;
-        }, 500);
+          el.loading.style.display = 'none';
+          el.errorPage.style.display = 'flex';
+          el.errorDesc.textContent = LOAD_ERROR_TEXT;
+        }, 200);
       };
     }
 
-    // 启动逻辑
+    // 立即执行 - 无延迟启动
     init();
+
+    // 性能优化：页面加载完成后清理无用资源
+    window.addEventListener('load', () => {
+      // 清理加载动画DOM
+      setTimeout(() => {
+        el.loading.remove();
+      }, 1000);
+    });
   </script>
 </body>
 </html>
